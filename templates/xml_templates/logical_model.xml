@@ -1,0 +1,6 @@
+<logicalModel id="Projection_1">
+  <descriptions/>
+  <attributes>
+    {logical_attributes}
+  </attributes>
+</logicalModel> 

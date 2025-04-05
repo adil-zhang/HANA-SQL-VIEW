@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL转HANA属性视图</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.15s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5c636a;
+        }
+        .result-container {
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        #result {
+            min-height: 490px;
+            height: 490px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SQL转HANA属性视图</h1>
+        <div>
+            <label for="sqlInput" class="form-label">SQL查询</label>
+            <textarea class="form-control" id="sqlInput" placeholder="请输入SQL查询..."></textarea>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="convert()">转换</button>
+        </div>
+        <div>
+            <label for="result" class="form-label">HANA属性视图</label>
+            <div class="result-container">
+                <button class="btn btn-secondary copy-button" onclick="copyResult()">复制</button>
+                <textarea class="form-control" id="result" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function convert() {
+            const sql = document.getElementById('sqlInput').value;
+            if (!sql) {
+                alert('请输入SQL查询');
+                return;
+            }
+
+            fetch('/convert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ sql_query: sql }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('result').value = data.hana_view;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('转换过程中出现错误');
+            });
+        }
+
+        function copyResult() {
+            const resultTextarea = document.getElementById('result');
+            resultTextarea.select();
+            document.execCommand('copy');
+            alert('已复制到剪贴板');
+        }
+    </script>
+</body>
+</html> 

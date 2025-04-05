@@ -1,0 +1,10 @@
+<localVariables>
+  <variable id="ZIN_DATE" parameter="true">
+    <descriptions defaultDescription="输入日期"/>
+    <variableProperties datatype="NVARCHAR" defaultExpressionLanguage="COLUMN_ENGINE" length="8" mandatory="false">
+      <valueDomain type="empty"/>
+      <selection multiLine="false" type="SingleValue"/>
+      <defaultExpression>format(now(),'yyyymmdd')</defaultExpression>
+    </variableProperties>
+  </variable>
+</localVariables> 

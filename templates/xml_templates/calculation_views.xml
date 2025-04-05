@@ -1,0 +1,11 @@
+<calculationViews>
+  <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+    <descriptions/>
+    <viewAttributes>
+      {view_attributes}
+    </viewAttributes>
+    <input node="{table_name}">
+      {attribute_mappings}
+    </input>
+  </calculationView>
+</calculationViews> 

@@ -1,0 +1,6 @@
+<dataSources>
+  <DataSource id="{data_source_id}" type="{source_type}">
+    <viewAttributes allViewAttributes="true"/>
+    <columnObject schemaName="{schema}" columnObjectName="{table_name}"/> 
+  </DataSource>
+</dataSources> 

@@ -1,0 +1,9 @@
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="100"/>
+      <rectangleSize height="200" width="300"/>
+    </shape>
+  </shapes>
+</layout>
+</Calculation:scenario> 

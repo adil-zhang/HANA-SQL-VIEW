@@ -1,0 +1,150 @@
+
+<!-- 视图的基础配置，用户只需要修改id为自己的视图名称  -->
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="2.3" id="Z_HANA_SCENARIO" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="crossClient" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="reportingEnabled" calculationScenarioType="TREE_BASED" dataCategory="CUBE" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Aggregation">
+  
+  <!-- 必须填写的描述部分 -->
+  <origin/>  <!-- 可填写源视图的元数据 -->
+  <descriptions defaultDescription="基础计算视图模板描述"/>
+  <!-- 填写修改时间 -->
+  <metadata changedAt="2025-04-05 00:00:00.000"/>  
+  
+  <!-- 本地变量部分：填写变量及其默认值（如果有） -->
+  <localVariables>
+    <variable id="ZIN_DATE" parameter="true">
+      <descriptions defaultDescription="输入日期"/>
+      <variableProperties datatype="NVARCHAR" defaultExpressionLanguage="COLUMN_ENGINE" length="8" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+        <defaultExpression>format(now(),'yyyymmdd')</defaultExpression>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  
+  <!-- 数据源部分：定义所有数据源 -->
+  <dataSources>
+    <DataSource id="ZACPPPA001" type="CALCULATION_VIEW">    <!-- 根据实际类型转换 -->
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="ABAP" columnObjectName="/BIC/AXTT001K2"/>  <!-- 替换为数据源路径 -->
+    </DataSource>
+  </dataSources>
+
+  <!-- 计算视图部分：定义所有视图（Projection, Aggregation, Join, Union） -->
+  <calculationViews>
+  
+    <!-- Projection View: 纯字段映射，适用于获取原始数据 -->
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <!-- 注释 -->
+      <descriptions/>
+      <viewAttributes>
+        <!-- 视图的所有字段 -->
+        <viewAttribute id="XH"/>
+        <viewAttribute id="BUKRS"/>
+        <viewAttribute id="BUTXT"/>
+      </viewAttributes>
+      <input node="#ZACPPPA001">
+        <!-- 字段映射：source 和 target 必须明确 -->
+        <mapping xsi:type="Calculation:AttributeMapping" target="XH" source="XH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BUKRS" source="BUKRS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BUTXT" source="BUTXT"/>
+      </input>
+    </calculationView>
+
+    <!-- Aggregation View: 用于聚合数据（例如，SUM、MAX） -->
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1" filterExpressionLanguage="COLUMN_ENGINE">
+      <descriptions/>
+      <viewAttributes>
+        <!-- 视图字段及其聚合 -->
+        <viewAttribute id="0FLAG"/>
+        <viewAttribute aggregationType="sum" id="K0VOLUME"/>
+      </viewAttributes>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="0FLAG" source="0FLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="K0VOLUME" source="K0VOLUME"/>
+      </input>
+      <filter>(&quot;0FLAG&quot; ='P')</filter>  <!-- 添加过滤条件 -->
+    </calculationView>
+
+    <!-- Join View: 多个视图连接（例如，左连接） -->
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="XH"/>
+        <viewAttribute id="BUKRS"/>
+      </viewAttributes>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="XH" source="XH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BUKRS" source="BUKRS"/>
+      </input>
+      <input node="#ZACPPPA001">
+        <mapping xsi:type="Calculation:AttributeMapping" target="XH" source="XH"/>
+      </input>
+      <joinAttribute name="XH"/>  <!-- 连接字段 -->
+    </calculationView>
+
+    <!-- Union View: 合并多个视图的数据 -->
+    <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="XH"/>
+        <viewAttribute id="BUKRS"/>
+        <viewAttribute id="K0VOLUME"/>
+      </viewAttributes>
+      <input emptyUnionBehavior="NO_ROW" node="#Aggregation_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="XH" source="XH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BUKRS" source="BUKRS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="K0VOLUME" source="K0VOLUME"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="XH" source="XH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BUKRS" source="BUKRS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="K0VOLUME" source="K0VOLUME"/>
+      </input>
+    </calculationView>
+    
+  </calculationViews>
+
+  <!-- 逻辑模型：定义所有逻辑属性和计算度量 -->
+  <logicalModel id="Join_1">
+    <descriptions/>
+    <attributes>
+      <attribute id="XH" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="序号"/>
+        <keyMapping columnObjectName="Join_1" columnName="XH"/>
+      </attribute>
+      <attribute id="BUKRS" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="公司代码"/>
+        <keyMapping columnObjectName="Join_1" columnName="BUKRS"/>
+      </attribute>
+    </attributes>
+    <baseMeasures>
+      <measure id="K0VOLUME" order="3" aggregationType="sum" engineAggregation="sum" measureType="simple">
+        <descriptions defaultDescription="计划数量"/>
+        <measureMapping columnObjectName="Join_1" columnName="K0VOLUME"/>
+      </measure>
+    </baseMeasures>
+  </logicalModel>
+
+  <!-- 布局：配置视图的可视化布局 -->
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="100" y="100"/>
+        <rectangleSize height="200" width="300"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="400" y="100"/>
+        <rectangleSize height="200" width="300"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="100" y="350"/>
+        <rectangleSize height="200" width="300"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="400" y="350"/>
+        <rectangleSize height="200" width="300"/>
+      </shape>
+    </shapes>
+  </layout>
+
+</Calculation:scenario>

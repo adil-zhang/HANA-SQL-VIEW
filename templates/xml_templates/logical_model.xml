@@ -1,6 +1,18 @@
-<logicalModel id="Projection_1">
+<logicalModel id="{model_id}">
   <descriptions/>
   <attributes>
     {logical_attributes}
   </attributes>
+  <calculatedAttributes/>
+  <privateDataFoundation>
+    <tableProxies/>
+    <joins/>
+    <layout>
+      <shapes/>
+    </layout>
+  </privateDataFoundation>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+  <localDimensions/>
 </logicalModel> 

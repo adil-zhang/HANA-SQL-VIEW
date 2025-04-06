@@ -4,7 +4,7 @@
     <viewAttributes>
       {view_attributes}
     </viewAttributes>
-    <input node="{table_name}">
+    <input node="#{table_name}">
       {attribute_mappings}
     </input>
   </calculationView>

@@ -49,8 +49,7 @@ cd [project-directory]
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # Linux/Mac
-# 或
-.\venv\Scripts\activate  # Windows
+venv\Scripts\activate     # Windows
 ```
 
 3. 安装依赖
@@ -82,11 +81,37 @@ python app.py
 
 ## 注意事项
 
-- 目前支持基本的SQL查询转换
-- 复杂的SQL查询可能需要手动调整生成的HANA属性视图
-- 建议在使用前先测试简单的SQL查询
-- 确保输入的SQL语法正确
+- 目前仅支持基本的SELECT查询转换
+- 不支持复杂的SQL操作（如JOIN、WHERE等）
+- 生成的XML文件需要根据实际需求进行微调
 
 ## 许可证
 
-MIT License 
+本项目采用 Apache License 2.0。详情请参阅 [LICENSE](LICENSE) 文件。
+
+Apache License 2.0 的主要特点：
+- 允许商业使用
+- 允许修改
+- 允许分发
+- 允许专利使用
+- 允许私人使用
+- 包含责任限制
+- 包含专利授权
+- 包含商标使用限制
+
+## 贡献指南
+
+欢迎提交 Issue 和 Pull Request 来帮助改进这个项目。
+
+## 联系方式
+
+如有任何问题或建议，请通过以下方式联系：
+- 提交 Issue
+- 发送邮件至 [adil_zhang@163,com]
+
+## 更新日志
+
+### v1.0.0
+- 初始版本发布
+- 支持基本的SQL到HANA属性视图的转换
+- 支持/BIC/格式表名的处理 

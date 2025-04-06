@@ -16,23 +16,28 @@ def sql_to_hana_attribute_view(sql_query):
         sql_query = sql_query.upper()
         
         # 提取schema和表名
-        table_match = re.search(r'FROM\s+(\w+\.\/BIC\/\w+)', sql_query)
+        table_match = re.search(r'FROM\s+([\w\.\/]+)', sql_query)
         if table_match:
-            schema, table_name = table_match.group(1).split('.')
-            # 处理/BIC/格式的表名
-            if schema == 'ABAP' and table_name.startswith('/BIC/'):
-                # 提取不带/BIC/的表名部分
-                table_name_without_bic = table_name[5:]
-                # 生成数据源ID（去掉最后一位数字）
-                data_source_id = re.sub(r'\d$', '', table_name_without_bic)
-                # 保持原始表名不变
-                table_name = table_name
+            full_table_name = table_match.group(1)
+            if '.' in full_table_name:
+                schema, table_name = full_table_name.split('.')
+                # 处理/BIC/格式的表名
+                if schema == 'ABAP' and table_name.startswith('/BIC/'):
+                    # 提取不带/BIC/的表名部分
+                    table_name_without_bic = table_name[5:]
+                    # 生成数据源ID（去掉最后一位数字）
+                    data_source_id = re.sub(r'\d$', '', table_name_without_bic)
+                    # 保持原始表名不变
+                    table_name = table_name
+                else:
+                    data_source_id = table_name
             else:
+                schema = ''
+                table_name = full_table_name
                 data_source_id = table_name
         else:
-            table_match = re.search(r'FROM\s+(\w+)', sql_query)
             schema = ''
-            table_name = table_match.group(1) if table_match else 'UNKNOWN_TABLE'
+            table_name = 'UNKNOWN_TABLE'
             data_source_id = table_name
         
         # 根据schema设置数据源类型

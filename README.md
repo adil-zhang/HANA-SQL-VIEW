@@ -107,7 +107,7 @@ Apache License 2.0 的主要特点：
 
 如有任何问题或建议，请通过以下方式联系：
 - 提交 Issue
-- 发送邮件至 [adil_zhang@163,com]
+- 发送邮件至 [adil_zhang@163.com]
 
 ## 更新日志
 

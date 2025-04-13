@@ -1,15 +1,15 @@
-# SQL转HANA属性视图转换器
+# HANA SQL 视图生成器
 
-这是一个用于将SQL查询转换为HANA属性视图的Web应用程序。它可以将简单的SQL查询转换为符合HANA标准的XML格式视图定义。
+这是一个基于Flask的Web应用，用于将SQL查询转换为HANA计算视图的XML格式。
 
 ## 功能特点
 
-- 简洁的Web界面
-- 实时SQL转换
-- 支持基本的SQL查询转换
-- 自动识别schema和表名
-- 生成标准的HANA属性视图XML
-- 支持下载生成的XML文件
+- 支持单表查询和JOIN查询
+- 自动处理表别名
+- 支持/BIC/格式的表名
+- 自动生成Projection视图和Join视图
+- 支持多行SQL查询
+- 自动处理JOIN条件中的字段
 
 ## 技术栈
 
@@ -68,22 +68,70 @@ python app.py
 
 ## 使用方法
 
-1. 在文本框中输入SQL查询（例如：`SELECT * FROM _SYS_BIC.TABLE_NAME`）
-2. 点击"转换"按钮
-3. 查看生成的XML内容
-4. 点击"下载XML文件"按钮保存结果
+1. 启动应用：
+```bash
+python app.py
+```
 
-## 支持的SQL语法
+2. 访问Web界面：
+```
+http://localhost:5000
+```
 
-- 基本的SELECT语句
-- 支持schema.table_name格式的表名
-- 支持多列选择
+3. 输入SQL查询并点击"生成视图"按钮
+
+## SQL查询格式
+
+### 单表查询
+```sql
+SELECT COL1, COL2 FROM TABLE1
+```
+
+### JOIN查询
+```sql
+SELECT T1.COL1, T1.COL2, T2.COL3 
+FROM TABLE1 AS T1 
+LEFT JOIN TABLE2 AS T2 ON T1.ID = T2.ID
+```
+
+### 多行SQL查询
+```sql
+SELECT 
+    T1.COL1, 
+    T1.COL2, 
+    T2.COL3 
+FROM 
+    TABLE1 AS T1 
+LEFT JOIN 
+    TABLE2 AS T2 
+ON 
+    T1.ID = T2.ID
+```
 
 ## 注意事项
 
-- 目前仅支持基本的SELECT查询转换
-- 不支持复杂的SQL操作（如JOIN、WHERE等）
-- 生成的XML文件需要根据实际需求进行微调
+1. 表名支持以下格式：
+   - 简单表名：`TABLE1`
+   - 带schema的表名：`SCHEMA.TABLE1`
+   - /BIC/格式的表名：`ABAP./BIC/TABLE1`
+
+2. JOIN查询支持：
+   - LEFT JOIN
+   - RIGHT JOIN
+   - INNER JOIN
+
+3. 表别名是可选的，但建议使用以提高可读性
+
+4. JOIN条件支持多个条件，使用AND连接
+
+## 输出说明
+
+生成的XML包含以下主要部分：
+
+1. 数据源（DataSources）：定义所有使用的表或视图
+2. Projection视图：为每个数据源创建一个Projection视图
+3. Join视图（如果有JOIN）：连接所有Projection视图
+4. 逻辑模型：定义最终输出的字段和映射关系
 
 ## 许可证
 
